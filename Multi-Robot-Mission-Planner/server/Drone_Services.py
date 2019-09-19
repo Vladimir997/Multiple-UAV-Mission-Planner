@@ -769,11 +769,11 @@ def shorter_path(current_location, distance_short, path_short, obstacles):
                 o = is_obstacle(start, finish, obstacles)
                 if o is None:
                     for k in range(i, j):
-                        if path_temp[k] not in l and not flag:
+                        if k == i and not flag:
                             distance_short -= distance(path_temp[k], path_temp[k+1])
-                            if k == i:
-                                flag = True
-                                continue
+                            flag = True
+                        elif path_temp[k] not in l and not k == i:
+                            distance_short -= distance(path_temp[k], path_temp[k+1])
                             l.append(path_temp[k])
 
                     distance_short -= last
