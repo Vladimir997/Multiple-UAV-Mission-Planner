@@ -278,11 +278,11 @@ def is_obstacle(p1, p2, obstacles):
 def calculate_closest_obstacle(p, obstacle_1, obstacle_2):
     shortest_distance = 9999999
     closest_obstacle = None
-    for i in range(4):
+    for i in range(len(obstacle_1)):
         if distance(p, obstacle_1[i]) < shortest_distance:
             shortest_distance = distance(p, obstacle_1[i])
             closest_obstacle = obstacle_1
-    for i in range(4):
+    for i in range(len(obstacle_2)):
         if distance(p, obstacle_2[i]) < shortest_distance:
             shortest_distance = distance(p, obstacle_2[i])
             closest_obstacle = obstacle_2
