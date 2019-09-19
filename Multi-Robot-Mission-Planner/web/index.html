@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+
+		<title>Mission Planner</title>
+
+		<meta charset="utf-8" />
+
+		<link href="style.css" rel="stylesheet" type="text/css">
+		
+		<!-- include stylesheet for leaflet -->
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
+			integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+			crossorigin=""/>
+			
+		<!-- Make sure you put this AFTER Leaflet's CSS -->
+		<script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
+			integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
+			crossorigin=""></script>
+
+	</head>
+
+	<body height = 100% width = 100%>
+			<div id="error_message" class="error_message"></div>
+		<!--
+			Fly and search buttons
+		-->
+		<div class="buttonBox_fly">
+			<input id="submitButton" class="button_fly" type="button" value="Fly" onclick="fly();" />
+			<input id="lineTask" class="button_task" type="button" value="Line task" onclick="setTask('line'); " />
+			<input id="pickupTask" class="button_task" type="button" value="Pick-up task" onclick="setTask('pickup');" />
+			<input id="searchTask" class="button_task" type="button" value="Search Task" onclick="setTask('search'); " />
+			<input id="saveSearchTask" class="button_task hide" type="button" value="Save Search Task" onclick="saveSearchTask(); "/>
+			<input id="obstacle" class="button_task" type="button" value="Obstacle" onclick="setTask('obstacle'); " />
+			<input id="save_obstacle" class="button_task hide" type="button" value="Save Obstacle" onclick="saveObstacle(); "/>
+			<input id="clear_tasks" class="button_clear_tasks" type="button" value="Clear Tasks" onclick="clear_tasks();" />
+			<input id="delete_mission" class="button_delete_mission" type="button" value="Delete Mission" onclick="delete_mission();" />
+		</div>
+
+		<div id="weight_box" class="weight_box">
+			<div id="pickupTask_weight_text" class="pickupTask_weight_text">Weight (kg)</div>
+			<input id="pickupTask_weight_value" class="pickupTask_weight_value" type="input" value="10" />
+		</div>
+
+		<!--
+			Add new drone button
+		-->
+		<div class="add_drone_box">
+			<input id="add_drone_button" class="add_drone_button" type="button" value="Add Drone" onclick="add_drone();" />
+			<input id="add_new_drone_command" class="add_new_drone_command" type="input" value="" />
+			<input id="copy_to_clipboard" class="copy_to_clipboard" type="button" value="Copy" onclick="copy_to_clipboard();" />
+			<input id="add_new_drone_connect_button" class="add_new_drone_connect_button" type="button" value="Connect" onclick="add_drone_connect();" />
+			<input id="add_new_drone_cancel_button" class="add_new_drone_cancel_button" type="button" value="Cancel" onclick="add_drone_cancel();" />
+			<div id="new_drone_status" class="new_drone_status"></div>
+		</div>
+
+		<!--
+			Flight Data
+		-->
+		<div class="flight_data">
+			<input id="next_vehicle_button" class="next_vehicle_button" type="button" value="Next Vehicle" onclick="next_vehicle();" />
+			<input id="prev_vehicle_button" class="prev_vehicle_button" type="button" value="Previous Vehicle" onclick="prev_vehicle();" />
+			<div id="current_vehicle_text" class="current_vehicle_text">1</div>
+			<input id="flight_data_button" class="flight_data_button" type="button" value="Flight Data" onclick="show_flight_data_tab();" />
+			<input id="parameter_button" class="parameter_button" type="button" value="Parameters" onclick="show_parameter_tab();" />
+			
+			<div id="flight_data_tab" class="flight_data_tab">
+				<div id="altitude_text" class="altitude_text">Altitude (m)</div>
+				<div id="altitude_value" class="altitude_value">0.00</div>
+				<div id="speed_text" class="speed_text">Speed (m/s)</div>
+				<div id="speed_value" class="speed_value">0.00</div>
+				<div id="heading_text" class="heading_text">Heading (deg)</div>
+				<div id="heading_value" class="heading_value">0</div>
+				<div id="battery_text" class="battery_text">Battery (min)</div>
+				<div id="battery_value" class="battery_value">0</div>
+				<input id="reacharge_battery_button" class="reacharge_battery_button" type="button" value="Reacharge Battery" onclick="reacharge_battery();" />
+			</div>
+			<div id="parameter_tab" class="parameter_tab">
+				<div id="parameter_1" class="parameter">
+					<div id="speed_parameter_text" class="speed_parameter_text">Max Speed (m/s)</div>
+					<div id="speed_parameter_value" class="speed_parameter_value">0.00</div>
+					<input id="speed_parameter_change_button" class="speed_parameter_change_button" type="button" value="Change" onclick="speed_parameter_change_button();" />
+					<input id="speed_parameter_change_button_confirm" class="speed_parameter_change_button_confirm" type="button" value="Confirm" onclick="speed_parameter_change_confirm();" />
+					<input id="speed_parameter_change_button_cancel" class="speed_parameter_change_button_cancel" type="button" value="Cancel" onclick="speed_parameter_change_cancel();" />
+					<input id="speed_parameter_change_input" class="speed_parameter_change_input" type="input" value="5" />
+				</div>
+				<div id="parameter_2" class="parameter">
+					<div id="battery_life_parameter_text" class="speed_parameter_text">Battery Life (seconds)</div>
+					<div id="battery_life_parameter_value" class="speed_parameter_value">0</div>
+					<input id="battery_life_parameter_change_button" class="speed_parameter_change_button" type="button" value="Change" onclick="battery_life_parameter_change_button();" />
+					<input id="battery_life_parameter_change_button_confirm" class="speed_parameter_change_button_confirm" type="button" value="Confirm" onclick="battery_life_parameter_change_confirm();" />
+					<input id="battery_life_parameter_change_button_cancel" class="speed_parameter_change_button_cancel" type="button" value="Cancel" onclick="battery_life_parameter_change_cancel();" />
+					<input id="battery_life_parameter_change_input" class="speed_parameter_change_input" type="input" value="600" />
+				</div>
+				<div id="parameter_3" class="parameter">
+					<div id="carry_weight_parameter_text" class="speed_parameter_text">Max Carry Weight (kg)</div>
+					<div id="carry_weight_parameter_value" class="speed_parameter_value">0</div>
+					<input id="carry_weight_parameter_change_button" class="speed_parameter_change_button" type="button" value="Change" onclick="carry_weight_parameter_change_button();" />
+					<input id="carry_weight_parameter_change_button_confirm" class="speed_parameter_change_button_confirm" type="button" value="Confirm" onclick="carry_weight_parameter_change_confirm();" />
+					<input id="carry_weight_parameter_change_button_cancel" class="speed_parameter_change_button_cancel" type="button" value="Cancel" onclick="carry_weight_parameter_change_cancel();" />
+					<input id="carry_weight_parameter_change_input" class="speed_parameter_change_input" type="input" value="10" />
+				</div>
+			</div>
+		</div>
+
+
+		<div id="mapid"></div>
+
+		<noscript>
+			Please activate JavaScript in your Browser for this Frontend to work.
+		</noscript>
+
+
+		<script>
+			//What task the user wants to create. Default is linetask
+			var task = "line"
+			document.getElementById("lineTask").style.boxShadow = "0 1px 5px blue";
+			document.getElementById("saveSearchTask").style.boxShadow = "0 1px 5px blue";
+			document.getElementById("save_obstacle").style.boxShadow = "0 1px 5px blue";
+			//60.396346, 5.321288 # Bergen
+			//60.369041, 5.354314 #HVL
+			//37.619374, -122.376637 # San Francisco
+			var mymap = L.map('mapid').setView([60.369041, 5.354314], 17);
+			// this access token is the one used in the examples of the tutorial
+			// in theory one should get an own one, but it works for now and that's all I want for testing
+			L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+				maxZoom: 20,
+				attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+					'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+					'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+				id: 'mapbox.streets'
+			}).addTo(mymap);
+
+			// create custom icon
+			var drone_icon = L.icon({
+				iconUrl: 'http://cdn.onlinewebfonts.com/svg/img_476254.png',
+				iconSize: [30, 30],
+			});
+			var drone_icon_big = L.icon({
+				iconUrl: 'http://cdn.onlinewebfonts.com/svg/img_476254.png',
+				iconSize: [50, 50],
+			});	
+				var drone_icon_dead = L.icon({
+				iconUrl: 'https://www.freeiconspng.com/uploads/explosion-icon-30.png',
+				iconSize: [50, 50],
+			});	
+				
+						
+			var startposmarker = L.marker([0,0]);
+			var startpos = null;
+			var line_tasks = [];
+			var line_tasks_map = [];
+			var pickup_tasks = []
+			var pickup_tasks_map = []
+			var polygons = [];
+			var search_task = []; 
+			var search_markers = []; 
+			var obstacles = []; 
+			var obstacle_polygons = [];
+			var obstacle_markers = []; 
+			var prevPos = null; 
+			var latlngs = []; 
+
+			var permanent_line_tasks = []
+			var permanent_pickup_tasks = []
+			var permanent_polygons = []
+			var permanent_obstacles = []
+
+			this.battery_data = {}
+			//This is the array that will be sent to the server. It will contain all the different tasks, each index corresponding to a specific task
+			//0 = linetask, 1 = polygontask, 2 = pickup task (not implemented)
+			var tasks = {}; 
+			
+			function doPolyTask(npos) {
+				var newpos = npos
+				//First time
+				if (startpos == null) {
+					startpos = newpos;
+					startposmarker.setLatLng(startpos);
+					startposmarker.addTo(mymap);
+				}
+				//All the other times
+				else {
+				
+					if(prevPos !== null) {
+						startpos = prevPos; 
+					}
+					var line = L.polyline([startpos, newpos]);
+					line.addTo(mymap);
+					polylines.push(line);
+					startposmarker.remove();
+					prevPos = newpos; 
+				}
+			}
+			function doLineTask(npos) {
+				var newpos = npos
+				if (startpos == null) {
+					startposmarker.setLatLng(npos);
+					startposmarker.addTo(mymap);
+					startpos = npos;
+				}
+				else {
+					var line = L.polyline([startpos, npos]);
+					line.addTo(mymap);
+					line_tasks_map.push(line);
+					line_tasks.push(line.getLatLngs())
+					startpos = null;
+					startposmarker.remove();
+				}
+			}
+			function doPickupTask(npos) {
+				var newpos = npos
+				if (startpos == null) {
+					startposmarker.setLatLng(npos);
+					startposmarker.addTo(mymap);
+					startpos = npos;
+				}
+				else {
+					var line = L.polyline([startpos, npos], {color:'blue'});
+					var weight = document.getElementById("pickupTask_weight_value").value;
+					line.addTo(mymap).bindTooltip(weight, { permanent: true, interactive: true });
+
+					pickup_tasks_map.push(line);
+					pickup_tasks.push({
+						"weight": weight,
+						"line" : line.getLatLngs()
+					});
+					startpos = null;
+					startposmarker.remove();
+				}
+			}
+			function doSearchTask(npos) {
+				var marker = L.marker(npos)
+				search_markers.push(marker)
+				marker.addTo(mymap)
+				latlngs.push(npos); 
+			}
+			function doObstacle(npos) {
+				var marker = L.marker(npos)
+				obstacle_markers.push(marker)
+				marker.addTo(mymap)
+				latlngs.push(npos); 
+			}
+			function saveSearchTask() {
+				if(latlngs.length > 3) {
+					rectangle = createRectangle();
+					polygons.push(L.polygon(rectangle, {color: "purple"}).addTo(mymap))		
+					search_task.push(rectangle)
+					clear_markers()
+					setTask("none")
+				}
+				else {
+					display_error_message("Place atleast 4 markers")
+				}
+			}
+			function saveObstacle() {
+				if(latlngs.length > 3) {
+					obstacle = createRectangle();
+					obstacle_polygons.push(L.polygon(obstacle, {color: "red"}).addTo(mymap))	
+					obstacles.push(obstacle)		
+					clear_markers()
+					setTask("none")
+				}
+				else {
+					display_error_message("Place atleast 4 markers")
+				}
+			}
+			function createRectangle() {
+				var lowlat = 90, lowlng = 180
+				var highlat = -90, highlng = -180
+				for (let i = 0; i < latlngs.length; i++) {
+					if (latlngs[i]['lng'] <= lowlng)
+						lowlng = latlngs[i]['lng']
+					if(latlngs[i]['lng'] >= highlng) {
+						highlng = latlngs[i]['lng']
+					}
+					if(latlngs[i]['lat'] <= lowlat)
+						lowlat = latlngs[i]['lat']
+					if(latlngs[i]['lat'] >= highlat)
+						highlat = latlngs[i]['lat'];
+				}
+				return rectangle = [
+					//North West
+					[highlat, lowlng],
+					//North East
+					[highlat, highlng],
+					//South East
+					[lowlat, highlng],
+					//South West
+					[lowlat, lowlng]
+				]
+			}
+
+
+			function onMapClick(e) {
+				var newpos = e.latlng;
+				
+				console.log("Task:" + task)
+				if(task === "search") { 
+					console.log(newpos)
+					doSearchTask(newpos)
+				}
+				else if(task === "line") {
+					doLineTask(newpos)
+				}
+				else if(task === "pickup") {
+					doPickupTask(newpos)
+				}
+				else if(task === "obstacle") {
+					doObstacle(newpos)
+				}
+				
+			}
+			mymap.on('click', onMapClick);
+			var drone_markers_and_traces = new Map();
+			var ws;
+			var number_of_vehicles = 0
+			var current_vehicle = 0
+						
+			function init() {
+				// Connect to Web Socket
+				ws = new WebSocket("ws://localhost:9001/");
+	
+				// Set event handlers.
+				ws.onopen = function() {
+					console.log("Server Online");
+				};
+				
+				ws.onmessage = function(e) {
+					var data = JSON.parse(e.data);
+					
+					// New Simulated drone status message
+					if(data[0] === "-1") {
+						update_new_drone_status(data)
+					}
+					// Existing drone data
+					else {
+						update_drone_position(data)
+						update_flight_data(data)
+						update_parameters(data)
+						highlight_vehicle(this.current_vehicle)
+						check_battery(data)
+						fix_buttons()
+					}
+				}.bind(this);
+				
+				ws.onclose = function() {
+					console.log("Server Closed");
+					alert("server disconnected - you may as well close this tab");
+				};
+	
+				ws.onerror = function(e) {
+					console.log("Server Error");
+					console.log(e);
+					alert(e);
+				};
+			}
+			function fly() {
+				//Index 0 = Line Tasks
+				tasks['line'] = line_tasks; 
+				//Index 1 = Search Tasks
+				tasks['search'] = search_task;
+				//Index 2 = obstacles
+				tasks['obstacles'] = obstacles;
+				//Index 3 = pickup Tasks
+				tasks['pickup'] = pickup_tasks;
+
+				console.log("JSON: " + JSON.stringify(tasks))
+				ws.send(JSON.stringify([0, tasks]));
+				add_permanent_markers()
+				clear_tasks()
+			}
+
+			function setTask(task) {
+				console.log("Setting task: " + task)
+				clear_markers()
+				this.task = task
+				switch(task) {
+					case "line":
+						document.getElementById("searchTask").style.display="block"; 
+						document.getElementById("saveSearchTask").style.display="none"; 
+						document.getElementById("obstacle").style.display="block"; 
+						document.getElementById("save_obstacle").style.display="none"; 
+						document.getElementById("lineTask").style.boxShadow = "0 1px 5px blue";
+						document.getElementById("pickupTask").style.boxShadow = "none";
+						document.getElementById("weight_box").style.display="none"; 
+						break
+					case "search":
+						document.getElementById("searchTask").style.display="none"; 
+						document.getElementById("saveSearchTask").style.display="block";
+						document.getElementById("obstacle").style.display="block"; 
+						document.getElementById("save_obstacle").style.display="none"; 
+						document.getElementById("lineTask").style.boxShadow = "none";
+						document.getElementById("pickupTask").style.boxShadow = "none";
+						document.getElementById("weight_box").style.display="none"; 
+						break
+					case "pickup":
+						document.getElementById("searchTask").style.display="block"; 
+						document.getElementById("saveSearchTask").style.display="none";
+						document.getElementById("obstacle").style.display="block"; 
+						document.getElementById("save_obstacle").style.display="none"; 
+						document.getElementById("pickupTask").style.boxShadow = "0 1px 5px blue";
+						document.getElementById("lineTask").style.boxShadow = "none";
+						document.getElementById("weight_box").style.display="block"; 
+						break
+					case "none":
+						document.getElementById("searchTask").style.display="block"; 
+						document.getElementById("saveSearchTask").style.display="none";
+						document.getElementById("obstacle").style.display="block"; 
+						document.getElementById("save_obstacle").style.display="none"; 
+						document.getElementById("pickupTask").style.boxShadow = "none";
+						document.getElementById("lineTask").style.boxShadow = "none";
+						document.getElementById("weight_box").style.display="none"; 
+						break
+					case "obstacle":
+						document.getElementById("searchTask").style.display="block"; 
+						document.getElementById("saveSearchTask").style.display="none";
+						document.getElementById("obstacle").style.display="none"; 
+						document.getElementById("save_obstacle").style.display="block"; 
+						document.getElementById("pickupTask").style.boxShadow = "none";
+						document.getElementById("lineTask").style.boxShadow = "none";
+						document.getElementById("weight_box").style.display="none"; 
+						break
+				} 
+				
+			}
+			function update_drone_position(data) {
+					var id = data[0];
+					var position = data[1];
+					// If new drone, add marker
+					if (!drone_markers_and_traces.has(id)) {
+						var new_drone_marker = L.marker(position,{icon: drone_icon}).bindTooltip("Vehicle "+(id+1)).addTo(mymap);
+						var new_drone_trace = L.polyline([position],{color:'green'}).addTo(mymap);
+						drone_markers_and_traces.set(id, [new_drone_marker, new_drone_trace]);
+						this.number_of_vehicles ++;
+					// else update marker
+					} else {
+						var drone_marker_and_trace = drone_markers_and_traces.get(id);
+						drone_marker_and_trace[0].setLatLng(position);
+						drone_marker_and_trace[1].addLatLng(position);
+					}
+			}
+			function update_flight_data(data) {
+				var id = data[0];
+				// Only show flight data for the currently selected vehicle
+				if(this.current_vehicle === id) {
+					vehicle_attitude = parseFloat(Math.round(data[2] * 100) / 100).toFixed(1);
+					document.getElementById("altitude_value").innerHTML = vehicle_attitude;
+					vehicle_speed = parseFloat(Math.round(data[3] * 100) / 100).toFixed(1);
+					document.getElementById("speed_value").innerHTML = vehicle_speed;
+					vehicle_heading = parseFloat(Math.round(data[4] * 100) / 100).toFixed(0);
+					document.getElementById("heading_value").innerHTML = vehicle_heading;
+					var time_left = data[5];
+					var minutes = parseFloat(Math.round(Math.floor(time_left / 60) * 100) / 100).toFixed(0);
+					var seconds = parseFloat(Math.round((time_left - minutes * 60)* 100) / 100).toFixed(0);
+					if (time_left > 0) {
+						document.getElementById("battery_value").innerHTML = minutes + "." + seconds;
+					} 
+					else {
+						document.getElementById("battery_value").innerHTML = "0.0";
+					}
+				}
+			}
+			function update_parameters(data) {
+				var id = data[0];
+				// Only show parameters for the currently selected vehicle
+				if(this.current_vehicle === id) {
+					vehicle_max_speed = parseFloat(Math.round(data[6] * 100) / 100).toFixed(2);
+					document.getElementById("speed_parameter_value").innerHTML = vehicle_max_speed;
+					vehicle_max_battery_time = parseFloat(Math.round(data[7] * 100) / 100).toFixed(0);
+					document.getElementById("battery_life_parameter_value").innerHTML = vehicle_max_battery_time;
+					vehicle_max_carry_weight = parseFloat(Math.round(data[8] * 100) / 100).toFixed(0);
+					document.getElementById("carry_weight_parameter_value").innerHTML = vehicle_max_carry_weight;
+				}
+			}
+			function next_vehicle() {
+				if(this.current_vehicle < this.number_of_vehicles - 1) {
+					this.current_vehicle += 1
+					document.getElementById("current_vehicle_text").innerHTML = this.current_vehicle + 1 ;
+					highlight_vehicle(this.current_vehicle)				
+					remove_highlight_from_vehicle(this.current_vehicle - 1)
+					fix_buttons()
+				}
+			}
+			function prev_vehicle() {
+				if(this.current_vehicle !== 0) {
+					this.current_vehicle -= 1
+					document.getElementById("current_vehicle_text").innerHTML = this.current_vehicle + 1 ;
+					highlight_vehicle(this.current_vehicle)				
+					remove_highlight_from_vehicle(this.current_vehicle + 1)
+					fix_buttons()
+				}
+			}
+			function highlight_vehicle(id) {
+				var drone_marker_and_trace = drone_markers_and_traces.get(id);
+				if (this.battery_data[id] === "empty") {
+					drone_marker_and_trace[0].setIcon(drone_icon_dead);
+				}
+				else {
+					drone_marker_and_trace[0].setIcon(drone_icon_big);
+				}
+			}
+			
+			function remove_highlight_from_vehicle(id) {
+				var drone_marker_and_trace = drone_markers_and_traces.get(id);
+				if (this.battery_data[id] === "empty") {
+					drone_marker_and_trace[0].setIcon(drone_icon_dead);
+				}
+				else {
+					drone_marker_and_trace[0].setIcon(drone_icon);
+				}
+			}
+
+			function fix_buttons() {
+				// enable or disable prev button
+				if(this.current_vehicle === 0 || this.number_of_vehicles === 0) {
+					document.getElementById("prev_vehicle_button").disabled = true;
+				}
+				else {
+					document.getElementById("prev_vehicle_button").disabled = false;
+				}
+				// enable or disable next button
+				if(this.current_vehicle === this.number_of_vehicles - 1) {
+					document.getElementById("next_vehicle_button").disabled = true;
+				}
+				else {
+					document.getElementById("next_vehicle_button").disabled = false;
+				}
+			}
+
+			function show_flight_data_tab() {
+				document.getElementById('flight_data_tab').style.display = "block";
+				document.getElementById('parameter_tab').style.display = "none";
+				document.getElementById('flight_data_button').style.boxShadow = "0 1px 5px blue";
+				document.getElementById('parameter_button').style.boxShadow = "none";
+			}
+			function show_parameter_tab() {
+				document.getElementById('flight_data_tab').style.display = "none";
+				document.getElementById('parameter_tab').style.display = "block";
+				document.getElementById('flight_data_button').style.boxShadow = "none";
+				document.getElementById('parameter_button').style.boxShadow = "0 1px 5px blue";
+			}
+			
+			function speed_parameter_change_button() {
+				document.getElementById('speed_parameter_value').style.display = "none";
+				document.getElementById('speed_parameter_change_button').style.display = "none";
+				document.getElementById('speed_parameter_change_input').style.display = "block";
+				document.getElementById('speed_parameter_change_button_cancel').style.display = "block";
+				document.getElementById('speed_parameter_change_button_confirm').style.display = "block";
+			}
+			function speed_parameter_change_cancel() {
+				document.getElementById('speed_parameter_value').style.display = "block";
+				document.getElementById('speed_parameter_change_button').style.display = "block";
+				document.getElementById('speed_parameter_change_input').style.display = "none";
+				document.getElementById('speed_parameter_change_button_cancel').style.display = "none";
+				document.getElementById('speed_parameter_change_button_confirm').style.display = "none";
+			}
+			function speed_parameter_change_confirm() {
+				document.getElementById('speed_parameter_value').style.display = "block";
+				document.getElementById('speed_parameter_change_button').style.display = "block";
+				document.getElementById('speed_parameter_change_input').style.display = "none";
+				document.getElementById('speed_parameter_change_button_cancel').style.display = "none";
+				document.getElementById('speed_parameter_change_button_confirm').style.display = "none";
+				ws.send(JSON.stringify([
+					1, 
+					this.current_vehicle, 
+					document.getElementById('speed_parameter_change_input').value,
+					document.getElementById('battery_life_parameter_change_input').value,
+					document.getElementById('carry_weight_parameter_change_input').value
+					]));
+			}
+			function battery_life_parameter_change_button() {
+				document.getElementById('battery_life_parameter_value').style.display = "none";
+				document.getElementById('battery_life_parameter_change_button').style.display = "none";
+				document.getElementById('battery_life_parameter_change_input').style.display = "block";
+				document.getElementById('battery_life_parameter_change_button_cancel').style.display = "block";
+				document.getElementById('battery_life_parameter_change_button_confirm').style.display = "block";
+			}
+			function battery_life_parameter_change_cancel() {
+				document.getElementById('battery_life_parameter_value').style.display = "block";
+				document.getElementById('battery_life_parameter_change_button').style.display = "block";
+				document.getElementById('battery_life_parameter_change_input').style.display = "none";
+				document.getElementById('battery_life_parameter_change_button_cancel').style.display = "none";
+				document.getElementById('battery_life_parameter_change_button_confirm').style.display = "none";
+			}
+			function battery_life_parameter_change_confirm() {
+				document.getElementById('battery_life_parameter_value').style.display = "block";
+				document.getElementById('battery_life_parameter_change_button').style.display = "block";
+				document.getElementById('battery_life_parameter_change_input').style.display = "none";
+				document.getElementById('battery_life_parameter_change_button_cancel').style.display = "none";
+				document.getElementById('battery_life_parameter_change_button_confirm').style.display = "none";
+				ws.send(JSON.stringify([
+					1, 
+					this.current_vehicle, 
+					document.getElementById('speed_parameter_change_input').value,
+					document.getElementById('battery_life_parameter_change_input').value,
+					document.getElementById('carry_weight_parameter_change_input').value
+					]));
+			}
+			function carry_weight_parameter_change_button() {
+				document.getElementById('carry_weight_parameter_value').style.display = "none";
+				document.getElementById('carry_weight_parameter_change_button').style.display = "none";
+				document.getElementById('carry_weight_parameter_change_input').style.display = "block";
+				document.getElementById('carry_weight_parameter_change_button_cancel').style.display = "block";
+				document.getElementById('carry_weight_parameter_change_button_confirm').style.display = "block";
+			}
+			function carry_weight_parameter_change_cancel() {
+				document.getElementById('carry_weight_parameter_value').style.display = "block";
+				document.getElementById('carry_weight_parameter_change_button').style.display = "block";
+				document.getElementById('carry_weight_parameter_change_input').style.display = "none";
+				document.getElementById('carry_weight_parameter_change_button_cancel').style.display = "none";
+				document.getElementById('carry_weight_parameter_change_button_confirm').style.display = "none";
+			}
+			function carry_weight_parameter_change_confirm() {
+				document.getElementById('carry_weight_parameter_value').style.display = "block";
+				document.getElementById('carry_weight_parameter_change_button').style.display = "block";
+				document.getElementById('carry_weight_parameter_change_input').style.display = "none";
+				document.getElementById('carry_weight_parameter_change_button_cancel').style.display = "none";
+				document.getElementById('carry_weight_parameter_change_button_confirm').style.display = "none";
+				ws.send(JSON.stringify([
+					1, 
+					this.current_vehicle, 
+					document.getElementById('speed_parameter_change_input').value,
+					document.getElementById('battery_life_parameter_change_input').value,
+					document.getElementById('carry_weight_parameter_change_input').value
+					]));
+			}
+			function reacharge_battery() {
+				ws.send(JSON.stringify([2, this.current_vehicle]));
+			}
+			
+			function check_battery(data) {
+				var time = data[5];
+				if (time < 0) {
+					this.battery_data[data[0]] = "empty"
+				}
+				else {
+					this.battery_data[data[0]] = "not_empty"
+				}
+			}
+
+			function add_drone() {
+				document.getElementById("add_new_drone_command").value = " sim_vehicle.py -v ArduCopter -L HVL -I " + number_of_vehicles;
+				document.getElementById('add_new_drone_command').style.display = "block";
+				document.getElementById('copy_to_clipboard').style.display = "block";
+				document.getElementById('add_new_drone_connect_button').style.display = "block";
+				document.getElementById('add_new_drone_cancel_button').style.display = "block";
+				document.getElementById('add_drone_button').style.display = "none";
+			}
+
+			function add_drone_cancel() {
+				document.getElementById("add_new_drone_command").value = "";
+				document.getElementById('add_new_drone_command').style.display = "none";
+				document.getElementById('copy_to_clipboard').style.display = "none";
+				document.getElementById('add_new_drone_connect_button').style.display = "none";
+				document.getElementById('add_new_drone_cancel_button').style.display = "none";
+				document.getElementById('add_drone_button').style.display = "block";
+			}
+
+			function add_drone_connect() {
+				document.getElementById("add_new_drone_command").value = "";
+				document.getElementById('add_new_drone_command').style.display = "none";
+				document.getElementById('copy_to_clipboard').style.display = "none";
+				document.getElementById('add_new_drone_connect_button').style.display = "none";
+				document.getElementById('add_new_drone_cancel_button').style.display = "none";
+				document.getElementById('add_drone_button').style.display = "none";
+				document.getElementById("new_drone_status").style.display = "block";
+				ws.send(JSON.stringify([4]));
+			}
+
+			function copy_to_clipboard() {
+				document.getElementById("add_new_drone_command").select();
+				document.execCommand("copy");
+				ws.send(JSON.stringify([3]));
+			}
+
+
+			function update_new_drone_status(data) {
+				if(data[1] === "Reached target altitude") {
+					document.getElementById("new_drone_status").innerHTML = "";
+					document.getElementById('add_drone_button').style.display = "block";
+					document.getElementById("new_drone_status").style.display = "none";
+				}
+				else {
+					document.getElementById('add_drone_button').style.display = "none";
+					document.getElementById("new_drone_status").innerHTML = data[1];
+				}
+			}
+
+			function clear_markers() {
+				startposmarker.remove();
+				startposmarker = L.marker([0,0]);
+				startpos = null;
+				latlngs = []; 
+				while (search_markers.length) {
+					marker = search_markers.pop()
+					marker.remove();
+				}
+				while (obstacle_markers.length) {
+					marker = obstacle_markers.pop()
+					marker.remove();
+				}
+			}
+
+			function clear_tasks() {
+				while (line_tasks_map.length) {
+					var line = line_tasks_map.pop();
+					line.remove();
+				}
+				while (pickup_tasks_map.length) {
+					var line = pickup_tasks_map.pop();
+					line.remove();
+				}
+				while (polygons.length) {
+					polygon = polygons.pop()
+					polygon.remove(); 
+				}
+				while (obstacle_polygons.length) {
+					obstacle = obstacle_polygons.pop()
+					obstacle.remove(); 
+				}
+				clear_markers()
+				line_tasks = []
+				pickup_tasks = []
+				search_task = []
+				obstacles = []
+			}
+
+			function add_permanent_markers() {
+				while (line_tasks_map.length) {
+					var line = line_tasks_map.pop();
+					line.setStyle({color:'orange'});
+					this.permanent_line_tasks.push(line)
+				}
+				while (pickup_tasks_map.length) {
+					var line = pickup_tasks_map.pop();
+					line.setStyle({color:'orange'});
+					this.permanent_pickup_tasks.push(line)
+				}
+				while (polygons.length) {
+					polygon = polygons.pop()
+					polygon.setStyle({color:'orange'});
+					this.permanent_polygons.push(polygon)
+				}
+				while (obstacle_polygons.length) {
+					obstacle = obstacle_polygons.pop()
+					obstacle.setStyle({color:'red'});
+					this.permanent_obstacles.push(obstacle)
+				}
+			}
+
+			function delete_mission() {
+				while (permanent_line_tasks.length) {
+					line = permanent_line_tasks.pop()
+					line.remove()
+				}
+				while (permanent_pickup_tasks.length) {
+					line = permanent_pickup_tasks.pop()
+					line.remove()
+				}
+				while (permanent_polygons.length) {
+					polygon = permanent_polygons.pop()
+					polygon.remove()
+				}
+				while (permanent_obstacles.length) {
+					obstacle = permanent_obstacles.pop()
+					obstacle.remove()
+				}
+				ws.send(JSON.stringify([5]));
+				clear_tasks()
+			}
+
+			async function display_error_message(message) {
+				document.getElementById('error_message').innerHTML = message;
+				await sleep(3)
+				document.getElementById('error_message').innerHTML = "";
+			}
+
+			function sleep(s) {
+				return new Promise(resolve => setTimeout(resolve, s*1000));
+			}
+
+			init();
+			
+		</script>
+				
+	</body>
+
+</html>

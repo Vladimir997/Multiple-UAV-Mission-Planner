@@ -1,0 +1,371 @@
+html{
+    min-height:100%;/* make sure it is at least as tall as the viewport */
+    position:relative;
+}
+body{
+    height:100%; /* force the BODY element to match the height of the HTML element */
+}
+#mapid{
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    overflow:hidden;
+    z-index:0;
+}
+
+.flight_data{
+    position:absolute;
+    bottom:5px;
+    left:5px;
+    z-index:1000;
+    height: 400px;
+    width: 350px;
+    border: 2px solid black;
+}
+.next_vehicle_button{
+    position:absolute;
+    top:0px;
+    left:230px;
+    height: 50px;
+    width: 120px;
+    z-index:1000;
+    font-size: 15px;
+    opacity: 0.7;
+}
+.prev_vehicle_button{
+    position:absolute;
+    top:0px;
+    left:0px;
+    height: 50px;
+    width: 120px;
+    z-index:1000;
+    font-size: 15px;
+    opacity: 0.7;
+}
+.current_vehicle_text{
+    position:absolute;
+    text-align: center;
+    top:0px;
+    left:120px;
+    height: 50px;
+    width: 110px;
+    z-index:1000;
+    font-size: 40px;
+    color:white;
+    background-color: black;
+    opacity: 0.7;
+}
+.flight_data_button{
+    position:absolute;
+    top:50px;
+    left:0px;
+    height: 30px;
+    width: 175px;
+    z-index:1000;
+    font-size: 15px;
+    opacity: 0.7;
+    box-shadow: 0 1px 5px blue;
+}
+.parameter_button{
+    position:absolute;
+    top:50px;
+    left:175px;
+    height: 30px;
+    width: 175px;
+    z-index:1000;
+    font-size: 15px;
+    opacity: 0.7;
+}
+.flight_data_tab{
+    position:absolute;
+    top:80px;
+    left:0px;
+    height: 320px;
+    width: 350px;
+    z-index:1000;
+    font-size: 15px;
+    opacity: 0.7;
+}
+.altitude_text{
+    position:absolute;
+    top:20px;
+    left:40px;
+    z-index:1000;
+    font-size: 25px;
+    color: blue;
+}
+.speed_text{
+    position:absolute;
+    top:20px;
+    left:210px;
+    z-index:1000;
+    font-size: 25px;
+    color: orange;
+}
+.heading_text{
+    position:absolute;
+    top:120px;
+    left:40px;
+    z-index:1000;
+    font-size: 25px;
+    color: green;
+}
+.battery_text{
+    position:absolute;
+    top:120px;
+    left:210px;
+    z-index:1000;
+    font-size: 25px;
+    color: purple;
+}
+.altitude_value{
+    position:absolute;
+    top:50px;
+    left:40px;
+    z-index:1000;
+    font-size: 40px;
+    color: blue;
+}
+.speed_value{
+    position:absolute;
+    top:50px;
+    left:210px;
+    z-index:1000;
+    font-size: 40px;
+    color: orange;
+}
+.heading_value{
+    position:absolute;
+    top:150px;
+    left:40px;
+    z-index:1000;
+    font-size: 40px;
+    color: green;
+}
+.battery_value{
+    position:absolute;
+    top:150px;
+    left:210px;
+    z-index:1000;
+    font-size: 40px;
+    color: purple;
+}
+.reacharge_battery_button{
+    position:absolute;
+    bottom:20px;
+    left:20px;
+    height: 30px;
+    width: 150px;
+    z-index:1001;
+    font-size: 15px;
+}
+.parameter_tab{
+    position:absolute;
+    top:80px;
+    left:0px;
+    height: 320px;
+    width: 350px;
+    z-index:1000;
+    font-size: 15px;
+    opacity: 0.7;
+    display: none
+}
+.parameter{
+    position: relative;
+    height: 80px;
+    width: 350px;
+    z-index:1000;
+    font-size: 15px;
+    border-bottom: 1px solid black;
+}
+.speed_parameter_text{
+    position:absolute;
+    top:12px;
+    left:10px;
+    z-index:1000;
+    font-size: 20px;
+    font-weight: bold;
+}
+.speed_parameter_value{
+    position:absolute;
+    top:45px;
+    left:10px;
+    z-index:1000;
+    font-size: 20px;
+}
+.speed_parameter_change_button{
+    position:absolute;
+    top:35px;
+    left:250px;
+    height: 35px;
+    width: 80px;
+    z-index:1000;
+    font-size: 15px;
+    opacity: 0.8;
+}
+.speed_parameter_change_button_confirm{
+    position:absolute;
+    top:35px;
+    left:250px;
+    height: 35px;
+    width: 80px;
+    z-index:1000;
+    font-size: 15px;
+    opacity: 0.8;
+    display: none
+}
+.speed_parameter_change_button_cancel{
+    position:absolute;
+    top:35px;
+    left:150px;
+    height: 35px;
+    width: 80px;
+    z-index:1000;
+    font-size: 15px;
+    opacity: 0.8;
+    display: none
+}
+.speed_parameter_change_input{
+    position:absolute;
+    top:40px;
+    left:10px;
+    height: 20px;
+    width: 100px;
+    z-index:1000;
+    font-size: 15px;
+    opacity: 0.7;
+    display: none
+}
+.buttonBox_fly{
+    position:absolute;
+    top:20px;
+    right:20px;
+    z-index:1000;
+    height: 300px;
+    width: 150px;
+}
+.button_fly{
+    height: 60px;
+    width: 100%;
+    font-size: 20px;
+    opacity: 0.7;
+    margin-bottom: 20px;
+}
+.button_task {
+    height: 40px; 
+    width: 100%; 
+    font-size: 18px; 
+    opacity: 0.7; 
+}
+.button_clear_tasks {
+    height: 40px; 
+    width: 100%; 
+    font-size: 18px; 
+    opacity: 0.7; 
+    margin-top: 30px;
+}
+.button_delete_mission {
+    height: 40px; 
+    width: 100%; 
+    font-size: 18px; 
+    opacity: 0.7; 
+    color: red;
+}
+.hide {
+    display: none; 
+    font-size: 1.0em; 
+}
+.add_drone_box {
+    position: absolute;
+    z-index:1000;
+    bottom: 420px;
+    left: 20px;
+    height: 100px; 
+    width: 300px; 
+    opacity: 0.7; 
+}
+.add_drone_button {
+    position: absolute;
+    z-index:1001;
+    top: 50px;
+    left: 0px;
+    height: 40px; 
+    width: 80px; 
+}
+.add_new_drone_command {
+    position: absolute;
+    top: 50px;
+    left: 0px;
+    height: 30px; 
+    width: 300px;
+    display: none;
+}
+.copy_to_clipboard {
+    position: absolute;
+    top: 50px;
+    left: 300px;
+    height: 37px; 
+    width: 70px; 
+    display: none;
+}
+.add_new_drone_connect_button {
+    position: absolute;
+    z-index:1001;
+    top: 0px;
+    left: 0px;
+    height: 40px; 
+    width: 80px;
+    display: none;
+}
+.add_new_drone_cancel_button {
+    position: absolute;
+    z-index:1001;
+    top: 0px;
+    left: 100px;
+    height: 40px; 
+    width: 80px;
+    display: none;
+}
+.new_drone_status {
+    position: absolute;
+    top: 70px;
+    left: 0px;
+    height: 40px; 
+    width: 300px;
+    font-size: 20px;
+}
+.error_message {
+    position: absolute;
+    text-align: center;
+    top: 30%;
+    left: 30%;
+    width: 40%;
+    font-size: 40px;
+    color: red;
+    z-index: 1001;
+}
+.pickupTask_weight_text {
+    position:absolute;
+    font-size: 20px;
+    z-index: 1001;
+}
+.pickupTask_weight_value {
+    position:absolute;
+    font-size: 20px;
+    top: 45%;
+    height: 50%;
+    width: 100%;
+    z-index: 1001;
+}
+.weight_box {
+    position:absolute;
+    top: 14%;
+    right: 200px;
+    height: 70px;
+    width: 100px;
+    z-index: 1001;
+    opacity: 0.7;
+    display: none;
+}
