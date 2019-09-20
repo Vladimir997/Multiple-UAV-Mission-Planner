@@ -460,3 +460,50 @@ def merge_obstacles(obstacles):
     obstacles = add_offset_to_obstacles(l, -0.00001)
 
     return obstacles
+
+def rotate_around_point(x_to_rotate, y_to_rotate, around_x, around_y, for_theta):
+    x_temp = x_to_rotate - around_x
+    y_temp = y_to_rotate - around_y
+    new_x = x_temp * math.cos(for_theta) - y_temp * math.sin(for_theta)
+    new_y = x_temp * math.sin(for_theta) + y_temp * math.cos(for_theta)
+    new_x += around_x
+    new_y += around_y
+    return new_x, new_y
+
+def makeOffset(prev_point, point, next_point, r):
+    x1, y1 = prev_point.lon, prev_point.lat
+    x2, y2 = point.lon, point.lat
+    x3, y3 = next_point.lon, next_point.lat
+
+    if x2 - x1 == 0:
+        x1 += 0.00001
+    if y2 - y1 == 0:
+        y1 += 0.00001
+    if x3 - x2 == 0:
+        x3 += 0.00001
+    if y3 - y2 == 0:
+        y3 += 0.00001
+
+    m1 = (y2 - y1)/(x2 - x1)
+    #b1 = y1 - m1 * x1
+    m2 = (y3 - y2)/(x3 - x2)
+    #b2 = y3 - m2 * x3
+
+    theta = math.atan2(m1-m2,1+m1*m2)
+    theta_half = theta/2
+    new_x_angle = math.atan2(y2-y1,x2-x1)
+
+    if theta < 0:
+        print('check')
+        theta_half = -theta_half
+
+    x_final, y_final = rotate_around_point(x2 + r, y2, x2, y2, new_x_angle + theta_half)
+
+    return x_final, y_final
+
+def make_obstacle_with_offset(obstacle, r):
+    obstacle_with_offset = []
+    n = len(obstacle)
+    for i, point in enumerate(obstacle):
+        obstacle_with_offset.append(makeOffset(obstacle[(i-1)%n], point, obstacle[(i+1)%n], r))
+    return obstacle_with_offset
