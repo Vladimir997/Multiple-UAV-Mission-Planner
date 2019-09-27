@@ -69,7 +69,7 @@ if __name__ == "__main__":
         with server:
             while True:
                 time.sleep(1)
-                position = [0, [60.396, 5.321 + (time.time() - t0) * 0.0001]]
+                position = [0, [37.619, -122.376 + (time.time() - t0) * 0.0001]]
                 server.send_message_to_all(repr(position))
                 sys.stdout.flush()
     except KeyboardInterrupt:
