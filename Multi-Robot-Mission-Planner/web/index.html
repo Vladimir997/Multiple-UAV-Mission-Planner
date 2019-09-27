@@ -119,9 +119,9 @@
 			document.getElementById("saveSearchTask").style.boxShadow = "0 1px 5px blue";
 			document.getElementById("save_obstacle").style.boxShadow = "0 1px 5px blue";
 			//60.396346, 5.321288 # Bergen
-			//60.369041, 5.354314 #HVL
+			//60.369041, 5.354314 # HVL
 			//37.619374, -122.376637 # San Francisco
-			var mymap = L.map('mapid').setView([60.369041, 5.354314], 17);
+			var mymap = L.map('mapid').setView([37.619374, -122.376637], 17);
 			// this access token is the one used in the examples of the tutorial
 			// in theory one should get an own one, but it works for now and that's all I want for testing
 			L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
@@ -641,7 +641,7 @@
 			}
 
 			function add_drone() {
-				document.getElementById("add_new_drone_command").value = " sim_vehicle.py -v ArduCopter -L HVL -I " + number_of_vehicles;
+				document.getElementById("add_new_drone_command").value = " sim_vehicle.py -v ArduCopter -L KSFO -I " + number_of_vehicles;
 				document.getElementById('add_new_drone_command').style.display = "block";
 				document.getElementById('copy_to_clipboard').style.display = "block";
 				document.getElementById('add_new_drone_connect_button').style.display = "block";
