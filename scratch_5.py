@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import math
 
+# This code is only for visualising the offset
+
 def rotate_around_point(x_to_rotate, y_to_rotate, around_x, around_y, for_theta):
     x_temp = x_to_rotate - around_x
     y_temp = y_to_rotate - around_y
