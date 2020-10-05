@@ -21,3 +21,5 @@ to make this mission planner work with different kinds of vehicles, some changes
 supports different kinds of vehicles, but the rover for example doesn't need a function like arm and take off.
 
 The algorithm can be further optimized to avoid doing the same calculations when not needed.
+
+Link to original project: https://github.com/95danlos/Multi-Robot-Mission-Planner
